@@ -8,13 +8,14 @@ namespace NZWalks.API.Controllers {
     [Route("[controller]")]
     public class RegionsController : Controller {
         private readonly IRegionRepository regionRepository;
+        public IMapper Mapper { get; }
 
         public RegionsController(IRegionRepository regionRepository, IMapper mapper) {
             this.regionRepository = regionRepository;
             Mapper = mapper;
         }
 
-        public IMapper Mapper { get; }
+
 
         [HttpGet]
         public async Task<IActionResult> GetAllRegionsAsync() {
@@ -70,7 +71,7 @@ namespace NZWalks.API.Controllers {
         [HttpPut]
         [Route("{id:guid}")]
         public async Task<IActionResult> UpdateAsync([FromRoute]Guid id, [FromBody]Models.DTO.UpdateRegionRequest updateRegionRequest) {
-            var region = new Models.Domain.Region()
+            var region = new Region()
             {
                 Area = updateRegionRequest.Area,
                 Code = updateRegionRequest.Code,
