@@ -36,7 +36,10 @@ namespace NZWalks.API.Controllers {
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddAsync(Models.DTO.AddWalkDifficultyRequest addWalkDifficulty) {
+        public async Task<IActionResult> AddWalkDifficultyAsync(Models.DTO.AddWalkDifficultyRequest addWalkDifficulty) {
+            if (!ValidateAddWalkAsync(addWalkDifficulty))
+                return BadRequest(ModelState);
+
             var walk = new Models.Domain.WalkDifficulty() {
                 Code = addWalkDifficulty.Code
             };
@@ -50,6 +53,9 @@ namespace NZWalks.API.Controllers {
         [HttpPut]
         [Route("{id:guid}")]
         public async Task<IActionResult> UpdateWalkDifficultyAsync([FromRoute] Guid id, [FromBody]Models.DTO.UpdateWalkDifficultyRequest updateWalkDifficultyRequest) {
+            if (!ValidateUpdateWalkAsync(updateWalkDifficultyRequest))
+                return BadRequest(ModelState);
+
             var walk = new Models.Domain.WalkDifficulty {
                 Code = updateWalkDifficultyRequest.Code
             };
@@ -74,6 +80,30 @@ namespace NZWalks.API.Controllers {
             var walkDto = Mapper.Map<Models.DTO.WalkDifficulty>(walk);
 
             return Ok(walkDto);
+        }
+
+        private bool ValidateAddWalkAsync(Models.DTO.AddWalkDifficultyRequest walk) {
+            if (walk == null) {
+                ModelState.AddModelError(nameof(walk), $"{nameof(walk)} must not be null");
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(walk.Code))
+                ModelState.AddModelError(nameof(walk.Code), $"{nameof(walk.Code)} must not be null, empty or white space");
+
+            return ModelState.ErrorCount == 0;
+        }
+
+        private bool ValidateUpdateWalkAsync(Models.DTO.UpdateWalkDifficultyRequest walk) {
+            if (walk == null) {
+                ModelState.AddModelError(nameof(walk), $"{nameof(walk)} must not be null");
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(walk.Code))
+                ModelState.AddModelError(nameof(walk.Code), $"{nameof(walk.Code)} must not be null, empty or white space");
+
+            return ModelState.ErrorCount == 0;
         }
     }
 }
